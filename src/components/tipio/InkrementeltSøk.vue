@@ -1,0 +1,99 @@
+<template>
+  <div class="text-4xl font-bold mb-4">Inkrementelt Søk organisasjon</div>
+  <div class="h-screen overflow-hidden flex justify-center">
+    <div class="pt-2 relative mx-auto text-gray-600">
+      <h2>{{ filteredList.length }} Organisasjons</h2>
+      <input
+        v-model="searchQuery"
+        class="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-lg focus:outline-none"
+        type="search"
+        name="search"
+        placeholder="Organisasjons Navn"
+      />
+      <button class="absolute right-0 top-28 mt-5 mr-4">
+        <svg
+          class="text-gray-600 h-4 w-4 fill-current"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          version="1.1"
+          id="Capa_1"
+          x="0px"
+          y="0px"
+          viewBox="0 0 56.966 56.966"
+          style="enable-background:new 0 0 56.966 56.966;"
+          xml:space="preserve"
+          width="512px"
+          height="512px"
+        >
+          <path
+            d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="mx-4 rounded bg-gray-400 shadow">
+    <div class="p-2">
+      <div class="font-bold">organisasjons</div>
+    </div>
+    <div class="bg-white p-2 border-2 border-gray-400 ">
+      <div v-for="org in filteredList" :key="org.tildelingId">
+        <div class="mb-2">
+          <router-link
+            :key="`/OrgSøk/${org.stottemottakerOrganisasjonsnummer}`"
+            :to="`/OrgSøk/${org.stottemottakerOrganisasjonsnummer}`"
+            >{{ org.stottemottakerOrganisasjonsnummer }} -
+            {{ org.stottemottakerNavn }}</router-link
+          >
+        </div>
+      </div>
+      <h4 v-if="!filteredList.length">No results</h4>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data: function() {
+    return {
+      orgnr: 0,
+      searchQuery: "",
+      organisasjonsList: [],
+    };
+  },
+  methods: {
+    fetchOrganisasjon() {
+      fetch(
+        "https://data.brreg.no/rofs/od/rofs/stottetildeling/search?language=nob&mottakerOrgnr=987&fraDato=2016-11-20"
+      )
+        .then((response) => response.json())
+        .then((data) => (this.organisasjonsList = data.slice(-50)));
+    },
+  },
+  mounted() {
+    this.fetchOrganisasjon();
+  },
+  computed: {
+    filteredList: function() {
+      return this.organisasjonsList.filter(
+        function(org) {
+          return (
+            org.stottemottakerNavn
+              .toLowerCase()
+              .indexOf(this.searchQuery.toLowerCase()) > -1
+          );
+        }.bind(this)
+      );
+    },
+  },
+};
+</script>
+
+<style>
+.h-screen {
+  height: 20vh !important;
+}
+.top-28 {
+  top: 28px;
+}
+</style>
