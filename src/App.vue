@@ -12,7 +12,6 @@
 
 <script>
 import Header from "@/components/site/header/Header.vue";
-//import LatestPosts from "@/components/blog/LatestPosts.vue"
 export default {
   components: {
     Header,
